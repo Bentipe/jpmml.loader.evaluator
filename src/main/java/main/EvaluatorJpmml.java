@@ -1,3 +1,5 @@
+package main;
+
 import org.dmg.pmml.FieldName;
 import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.Computable;
@@ -15,7 +17,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class EvaluatorJpmml {
 
     }
 
-    public Double predict(HashMap<String, Double> pfeatures) {
+    public Double predict(Map<String, Double> pfeatures) {
 
         Map<FieldName, FieldValue> arguments = new LinkedHashMap<>();
 
@@ -41,8 +42,7 @@ public class EvaluatorJpmml {
         if (pfeatures.size() != inputFields.size())
             throw new IllegalArgumentException("ERROR Size of given features is not the same as the input required!");
 
-        for (int i = 0; i < inputFields.size(); i++) {
-            InputField inputField = inputFields.get(i);
+        for (InputField inputField : inputFields) {
             String inputFieldname = inputField.getMiningField().getName().getValue();
             Object raw = pfeatures.get(inputFieldname);
             FieldValue inputFieldValue = inputField.prepare(raw);
@@ -87,7 +87,7 @@ public class EvaluatorJpmml {
             ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
             return modelEvaluatorFactory.newModelEvaluator(pmml);
         } catch (FileNotFoundException | SAXException | JAXBException e) {
-            e.printStackTrace();
+            logger.error("error: %S", e);
         }
 
         return null;
